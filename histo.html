@@ -1,0 +1,108 @@
+<html>
+  <head>
+  	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	  google.load("visualization", "1", {packages:["map"]}); // drawMap
+	//	google.load('visualization', '1', {'packages': ['geochart']}); // drawGeoChart
+		google.setOnLoadCallback(drawMap);
+	  
+		function drawGeoChart() {
+		
+			var data = google.visualization.arrayToDataTable([
+				['Country',   'Population', 'Area Percentage'],
+				['France',  65700000, 50],
+				['Germany', 81890000, 27],
+				['Poland',  38540000, 23]
+			]);
+
+			var options = {
+				sizeAxis: { minValue: 0, maxValue: 100 },
+				region: '155', // Western Europe
+				displayMode: 'markers',
+				colorAxis: {colors: ['#e7711c', '#4374e0']} // orange to blue
+			};
+	  
+			var map = new google.visualization.GeoChart(document.getElementById('carte'));
+			map.draw(data, options);
+  
+		}
+ 
+ 		function drawMap(){
+		// Create the search box and link it to the UI element.
+		var input = /** @type {HTMLInputElement} */(
+		document.getElementById('pac-input'));
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+		var searchBox = new google.maps.places.SearchBox(
+		/** @type {HTMLInputElement} */(input));
+		
+		// Affichage de la carte
+		
+		var latlng = new google.maps.LatLng(45.183, 5.717);
+		//objet contenant des propriétés avec des identificateurs prédéfinis dans Google Maps permettant
+		//de définir des options d'affichage de notre carte
+		var options = {
+			center: latlng,
+			zoom: 19,
+			mapTypeId: google.maps.MapTypeId.MAP //SATELLITE
+		};
+		
+		//constructeur de la carte qui prend en paramêtre le conteneur HTML
+		//dans lequel la carte doit s'afficher et les options
+		var map = new google.maps.Map(document.getElementById("carte"), options);
+		var nbImages = 15;
+		var hChape = 10 * nbImages;
+		var chart = {
+			path: 'M 0 0 L 20 0 L 20 '+ hChape +' L 0 '+ hChape +' z',
+			fillColor: 'yellow',
+			fillOpacity: 0.8,
+			scale: 1,
+			strokeColor: 'gold',
+			strokeWeight: 5
+		};
+
+  
+		var marker = new google.maps.Marker({
+			position: map.getCenter(), //new google.maps.LatLng(45.183, 5.717),
+			icon: chart,
+			draggable: false,
+			map: map
+		});
+
+	/*	google.maps.event.addListener(marqueur,'dragend', function(event) {
+			alert(marqueur.getPosition());
+		});
+
+		google.maps.event.addListener(carte,'zoom_changed', function(event) {
+			alert(carte.getZoom());
+		});*/
+		
+		}	
+
+		function drawChart() {
+		// Affichage de l'histogramme
+        var data = google.visualization.arrayToDataTable([
+          ['Dinosaur', 'Length'],
+          ['Acrocanthosaurus (top-spined lizard)', 12.2],
+          ['Velociraptor (swift robber)', 1.8]]);
+
+        var options = {
+          title: 'Lengths of dinosaurs, in meters',
+          legend: { position: 'none' },
+        };
+
+        var chart = new google.visualization.Histogram(document.getElementById('chart_div'));
+        chart.draw(data, options);
+
+		}
+   </script>
+  </head>
+	<body>
+	<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+	<div id="carte" style="width:100%; height:100%"></div>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>
