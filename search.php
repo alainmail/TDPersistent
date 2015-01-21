@@ -175,11 +175,7 @@
 	function addVariable($valeur)
 	{
 		$ville = $valeur;
-<<<<<<< HEAD
 		echo $ville;	
-=======
-		echo $ville
->>>>>>> 4571e9818ba90ed856ec43d490d1237192a4e7fe
 	}  
 	
 	showImagesNb();
