@@ -175,7 +175,8 @@
 	function addVariable($valeur)
 	{
 		$ville = $valeur;
-		echo $ville;	
+		echo $ville;
+		//pour tester le build après commit		
 	}  
 	
 	showImagesNb();
