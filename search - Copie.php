@@ -8,23 +8,12 @@
 		$ville = $_GET["ville"];
 		$lgt = $_GET["lgt"];
 		$lat = $_GET["lat"];
-		
-		//Url image
-		$idFarm = "'" . $_GET["idFarm"] . "'";
-		$idServer = "'" . $_GET["idServer"] . "'";
-		$id = "'" . $_GET["id"] . "'";
-		$idSecret = "'" . $_GET["idSecret"] . "'";
 	} 
 	else
 	{	
-		$nbImages = 1;
 		$ville = "lyon";
 		$lat = 45.183;
 		$lgt = 5.717;	
-		$idFarm = 0;
-		$idServer = 0;
-		$id = 0;
-		$idSecret = 0;
 	}
 	
 ?>
@@ -39,13 +28,6 @@
         margin: 0px;
         padding: 0px
       }
-	  
-	  #image {
-		position: absolute;
-	    top:90px; 
-		left:87px
-	  }
-	  
       .controls {
         margin-top: 16px;
         border: 1px solid transparent;
@@ -92,39 +74,32 @@
 }
 
     </style>
-    <title>Visit the most amazing places around</title>
+    <title>See all around</title>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
     <script>
+	// This example adds a search box to a map, using the Google Place Autocomplete
+	// feature. People can enter geographical searches. The search box will return a
+	// pick list containing a mix of places and predicted search terms.
+
 		function initialize() {
+
+		  var markers = [];
+		  var map = new google.maps.Map(document.getElementById('map-canvas'), {
+			mapTypeId: google.maps.MapTypeId.SATELLITE
+		  });
+
 			// Récupération des variables php récupérée depuis l'url
-			var lat= <?php echo $lat; ?>;
 			var lgt= <?php echo $lgt; ?>;
-			//var ville= <?php echo $ville; ?>;
-			var nbImages= <?php echo $nbImages; ?>;
-
-			var mapOptions = {
-				scaleControl: true,
-				center: new google.maps.LatLng(lat, lgt),
-				zoom: 13,
-				mapTypeId: google.maps.MapTypeId.SATELLITE
-			};
+			var lat= <?php echo $lat; ?>;
 		  
-			var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			//Positionnement de la carte sur les coordonnées voulues
+			var defaultBounds = new google.maps.LatLngBounds(
+				new google.maps.LatLng(lat,lgt),
+				new google.maps.LatLng(lat,lgt)
+			);
+			map.fitBounds(defaultBounds);
 
-			// MARKER
-			var infoNb = nbImages + " images sont";
-			if(parseInt(nbImages)==1) infoNb = nbImages + " image est";
-			else if(parseInt(nbImages)==0) infoNb = "Aucune image n'est";
-			infoNb += " en ligne sur Flickr pour ce lieu."
-			
-			var marker = new google.maps.Marker({
-				map: map,
-				position: map.getCenter(),
-				icon: showChart(nbImages),
-				title: infoNb
-			});
-			
-			// SEARCH BOX
+
 			// Ajout de la boite de recherche
 			var input = /** @type {HTMLInputElement} */(
 				document.getElementById('pac-input'));
@@ -134,14 +109,63 @@
 				/** @type {HTMLInputElement} */(input)
 			);
 
-			// Affichage de l'image
-			afficheImage();
 			
-			// Traitement de la saisie d'une ville dans la boite de recherche
 			google.maps.event.addListener(searchBox, 'places_changed', function() {
 				var places = searchBox.getPlaces();
 				window.location  = "showImagesNb.php?ville=" + places[0].name + "&lat=" + places[0].geometry.location.lat() + "&lgt=" + places[0].geometry.location.lng();
+		
+				if (places.length == 0) {
+					return;
+				}
+				for (var i = 0, marker; marker = markers[i]; i++) {
+				  marker.setMap(null);
+				}
+
+				// Placement des markers
+				markers = [];
+				var bounds = new google.maps.LatLngBounds();
+				for (var i = 0, place; place = places[i]; i++) {
+				  var image = {
+					url: place.icon,
+					size: new google.maps.Size(71, 71),
+					origin: new google.maps.Point(0, 0),
+					anchor: new google.maps.Point(17, 34),
+					scaledSize: new google.maps.Size(25, 25)
+				  };
+
+					var nbImages = 5 + 2*i;
+					chart = showChart(nbImages);
+					
+				  // Create a marker for each place.
+				  var marker = new google.maps.Marker({
+					map: map,
+					icon: chart,
+					title: place.name,
+					position: place.geometry.location
+				  });
+
+				  markers.push(marker);
+
+				  bounds.extend(place.geometry.location);
+				}
+
+				map.fitBounds(bounds);
 			});
+		}
+
+		function placeMarker(lat,lgt,ville,map){
+			var markers = [];
+			var location = new google.maps.LatLng(lat,lgt);
+			var bounds = new google.maps.LatLngBounds();
+			var marker = new google.maps.Marker({
+				map: map,
+				icon: showChart(nbImages),
+				title: ville,
+				position: location
+			});
+			markers.push(marker);
+			bounds.extend(location);
+			map.fitBounds(bounds);		
 		}
 		
 		// Affichage du nombre d'images
@@ -154,25 +178,12 @@
 				scale: 1,
 				strokeColor: 'gold',
 				strokeWeight: 5,			
+				/*size: new google.maps.Size(71, 71),
+				origin: new google.maps.Point(0, 0),
+				anchor: new google.maps.Point(17, 34),
+				scaledSize: new google.maps.Size(25, 25)*/
 			};
 			return chart;
-		}
-		
-		function afficheImage()
-		{
-			if(id != ""){
-				var idFarm= <?php echo $idFarm; ?>;
-				var idServer= <?php echo $idServer; ?>;
-				var id= <?php echo $id; ?>;
-				var idSecret= <?php echo $idSecret; ?>;
-			
-				//dynamically add an image and set its attribute
-				var img = document.createElement("img");
-				img.src="https://farm" + idFarm + ".staticflickr.com/" + idServer + "/" + id + "_" + idSecret + ".jpg";
-				img.id="picture"
-				var foo = document.getElementById("image");
-				foo.appendChild(img);
-			}
 		}
 			
 		google.maps.event.addDomListener(window, 'load', initialize);
@@ -188,6 +199,6 @@
   <body>
     <input id="pac-input" class="controls" type="text" placeholder="Search Box">
     <div id="map-canvas"></div>
-	<div id="image">&nbsp;</div>
+	
   </body>
 </html>
