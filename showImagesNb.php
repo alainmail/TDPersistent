@@ -32,7 +32,7 @@
 
 		// Convert JSON to PHP object
 		$json = curl_exec($session);
-		var_dump($json);
+		//var_dump($json);
 		$phpObj =  json_decode($json);
 		
 		// Exploitation des données
@@ -49,6 +49,6 @@
 		//$urlImage = "<img src='https://farm" . $photos[0]->farm . ".staticflickr.com/" . $photos[0]->server . "/" . $photos[0]->id . "_" . $photos[0]->secret . ".jpg'/>";
 		//echo $urlImage;
 		// Relance la page avec la nouvelle ville
-	//	echo "<script language='JavaScript'>window.open('search.php?nbImages=".$nbImages."&idPhoto=".$idPhoto."&ville=".$ville."&idServer=".$photos[0]->server."&id=".$photos[0]->id."&idSecret=".$photos[0]->secret."&idFarm=".$photos[0]->farm."&lgt=".$lgt."&lat=".$lat."', '_self');</script>";
+		echo "<script language='JavaScript'>window.open('search.php?nbImages=".$nbImages."&idPhoto=".$idPhoto."&ville=".$ville."&idServer=".$photos[0]->server."&id=".$photos[0]->id."&idSecret=".$photos[0]->secret."&idFarm=".$photos[0]->farm."&lgt=".$lgt."&lat=".$lat."', '_self');</script>";
 
 ?>
